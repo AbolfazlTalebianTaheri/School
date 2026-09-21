@@ -19,7 +19,7 @@ namespace School.Api.Controllers.V1
         [HttpPost(AttendanceUriContracts.AddDay)]
         public async Task AddDayAsync(AttendanceDayResponse day, CancellationToken cancellationToken = default) =>
             await attendanceService.AddDayAsync(mapper.Map<AttendanceDayDto>(day), cancellationToken);
-        [HttpPost(AttendanceUriContracts.AddDay)]
+        [HttpPost(AttendanceUriContracts.AddDelay)]
         public async Task AddDelayAsync(AttendanceDelayResponse delay, CancellationToken cancellationToken = default) =>
             await attendanceService.AddDelayAsync(mapper.Map<AttendanceDelayDto>(delay), cancellationToken);
         [HttpPost(AttendanceUriContracts.AddLog)]
@@ -28,11 +28,11 @@ namespace School.Api.Controllers.V1
         public async Task<bool> DayExistsAsync(DateOnly date, CancellationToken cancellationToken = default) => await attendanceService.DayExistsAsync(date, cancellationToken);
         [HttpGet(AttendanceUriContracts.DelayExists)]
         public async Task<bool> DelayExistsAsync(int attendanceLogId, Class_Bell classBell, CancellationToken cancellationToken = default) => await attendanceService.DelayExistsAsync(attendanceLogId, classBell, cancellationToken);
-        [HttpGet(AttendanceUriContracts.DeleteDay)]
+        [HttpDelete(AttendanceUriContracts.DeleteDay)]
         public void DeleteDay(AttendanceDayResponse day) => attendanceService.DeleteDay(mapper.Map<AttendanceDayDto>(day));
-        [HttpGet(AttendanceUriContracts.DeleteDelay)]
+        [HttpDelete(AttendanceUriContracts.DeleteDelay)]
         public void DeleteDelay(AttendanceDelayResponse delay) => attendanceService.DeleteDelay(mapper.Map<AttendanceDelayDto>(delay));
-        [HttpGet(AttendanceUriContracts.DeleteLog)]
+        [HttpDelete(AttendanceUriContracts.DeleteLog)]
         public void DeleteLog(AttendanceLogResponse log) => attendanceService.DeleteLog(mapper.Map<AttendanceLogDto>(log));
         [HttpGet(AttendanceUriContracts.GetAbsentsByDate)]
         public async Task<IReadOnlyList<AttendanceLogResponse>> GetAbsentsByDateAsync(DateOnly date, CancellationToken cancellationToken = default) => mapper.Map<IReadOnlyList<AttendanceLogResponse>>(await attendanceService.GetAbsentsByDateAsync(date, cancellationToken));
@@ -52,11 +52,11 @@ namespace School.Api.Controllers.V1
         [HttpGet(AttendanceUriContracts.GetStudentLog)]
         public async Task<AttendanceLogResponse?> GetStudentLogAsync(ushort studentId, DateOnly date, CancellationToken cancellationToken = default) => mapper.Map<AttendanceLogResponse?>(await attendanceService.GetStudentLogAsync(studentId, date, cancellationToken));
         [HttpGet(AttendanceUriContracts.StudentLogExists)]
-        public async Task<bool> StudentLogExistsAsync(ushort studentId, DateOnly date, CancellationToken cancellationToken = default) => await attendanceService.StudentLogExistsAsync(studentId, date, cancellationToken); [HttpGet(AttendanceUriContracts.UpdateDay)]
+        public async Task<bool> StudentLogExistsAsync(ushort studentId, DateOnly date, CancellationToken cancellationToken = default) => await attendanceService.StudentLogExistsAsync(studentId, date, cancellationToken); [HttpPut(AttendanceUriContracts.UpdateDay)]
         public void UpdateDay(AttendanceDayResponse day) => attendanceService.UpdateDay(mapper.Map<AttendanceDayDto>(day));
-        [HttpGet(AttendanceUriContracts.UpdateDelay)]
+        [HttpPut(AttendanceUriContracts.UpdateDelay)]
         public void UpdateDelay(AttendanceDelayResponse delay) => attendanceService.UpdateDelay(mapper.Map<AttendanceDelayDto>(delay));
-        [HttpGet(AttendanceUriContracts.UpdateLog)]
+        [HttpPut(AttendanceUriContracts.UpdateLog)]
         public void UpdateLog(AttendanceLogResponse log) => attendanceService.UpdateLog(mapper.Map<AttendanceLogDto>(log));
     }
 }
