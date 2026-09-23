@@ -17,7 +17,8 @@ namespace School.Api.Controllers.V1
         public async Task<ApiResult<IReadOnlyList<UserResponse>>> GetAll(CancellationToken cancellationToken = default)
         {
             var users = await userService.GetAllAsync(cancellationToken);
-            return mapper.Map<ApiResult<IReadOnlyList<UserResponse>>>(users);
+            var response = mapper.Map<IReadOnlyList<UserResponse>>(users); ;
+            return ApiResult<IReadOnlyList<UserResponse>>.Succeeded(response);
         }
         [HttpGet(UserUriConstants.GetById)]
         public async Task<ApiResult<UserResponse?>> GetById(ushort id, CancellationToken cancellationToken = default)

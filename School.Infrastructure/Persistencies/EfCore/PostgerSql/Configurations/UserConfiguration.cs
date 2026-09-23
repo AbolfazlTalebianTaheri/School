@@ -17,7 +17,7 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Configurations
             builder.Property(x => x.UserName)
                 .HasMaxLength(UserConstant.MaxLenghUserName);
             builder.Property(x => x.PassWordHash)
-                .HasMaxLength(UserConstant.MaxLenghPassWordHash);
+                .HasMaxLength(UserConstant.MaxLenghPasswordHash);
             builder.Property(x => x.UserRole)
                 .IsRequired(true);
         }

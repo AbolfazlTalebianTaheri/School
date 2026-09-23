@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using School.Api.Constants;
 using School.Api.Contracts;
+using School.Api.Contracts.Lesson;
 using School.Api.Contracts.Student;
 using School.Application.DTOs;
 using School.Application.Service;
@@ -14,11 +15,18 @@ namespace School.Api.Controllers.V1
     [ApiVersion(1.0)]
     public class StudentController(StudentService studentService, IMapper mapper) : BaseController
     {
+        //[HttpGet(StudentUriConstants.GetAll)]
+        //public async Task<ApiResult<IReadOnlyList<StudentResponse>>> GetAll(CancellationToken cancellationToken)
+        //{
+        //    var students = await studentService.GetAllAsync(cancellationToken);
+        //    return mapper.Map<ApiResult<IReadOnlyList<StudentResponse>>>(students);
+        //}
         [HttpGet(StudentUriConstants.GetAll)]
         public async Task<ApiResult<IReadOnlyList<StudentResponse>>> GetAll(CancellationToken cancellationToken)
         {
             var students = await studentService.GetAllAsync(cancellationToken);
-            return mapper.Map<ApiResult<IReadOnlyList<StudentResponse>>>(students);
+            var response = mapper.Map<IReadOnlyList<StudentResponse>>(students);
+            return ApiResult<IReadOnlyList<StudentResponse>>.Succeeded(response);
         }
         [HttpGet(StudentUriConstants.GetById)]
         public async Task<ApiResult<StudentResponse?>> GetById(ushort id, CancellationToken cancellationToken)

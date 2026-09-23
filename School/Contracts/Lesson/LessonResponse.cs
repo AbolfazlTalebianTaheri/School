@@ -2,5 +2,5 @@
 
 namespace School.Api.Contracts.Lesson
 {
-    public record LessonResponse(string LessonName, Grade_Level Grade_Level, Field_Of_Study Field_Of_Study);
+    public record LessonResponse(string LessonName, Grade_Level Grade_Level, Field_Of_Study Field_Of_Study,ushort StudentId);
 }

@@ -11,6 +11,13 @@ namespace School.Application.Mapper
     {
         public MappingProfile()
         {
+            CreateMap<Student,StudentDto>();
+            CreateMap<User, UserDto>();
+            CreateMap<AttendanceLog, AttendanceLogDto>();
+            CreateMap<Lesson, LessonDto>();
+            CreateMap<AttendanceDay, AttendanceDayDto>();
+            CreateMap<AttendanceDelay,AttendanceDelayDto>();
+            CreateMap<AttendanceLog,AttendanceLogDto>();
             CreateMap<StudentDto, Student>();
             CreateMap<UserDto, User>();
             CreateMap<AttendanceLogDto, AttendanceLog>();

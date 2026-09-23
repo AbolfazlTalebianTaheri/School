@@ -10,7 +10,8 @@ namespace School.Domain.Entitys
         public string FirstName { get; private set; } = null!;
         public string LastName { get; private set; } = null!;
         public int StudentCode { get; private set; }
-        public List<User> Users { get; private set; } = new List<User>();
+        private readonly List<User> _users = new();
+        public IReadOnlyCollection<User> Users => _users;
         public Grade_Level Grade_Level { get; private set; }
         public Field_Of_Study Field_Of_Study { get; private set; }
         private Student() { }
@@ -22,7 +23,7 @@ namespace School.Domain.Entitys
             Grade_Level = grade_Level;
             Field_Of_Study = field_Of_Study;
         }
-        public void AddPatern(User patern) => Users.Add(patern);
-        public void DeletePatern(User patern) => Users.Remove(patern);
+        public void AddParent(User patern) => _users.Add(patern);
+        public void DeleteParent(User patern) => _users.Remove(patern);
     }
 }
