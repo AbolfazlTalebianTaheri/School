@@ -35,7 +35,7 @@ namespace School.Api.Controllers.V1
             return mapper.Map<StudentResponse?>(student);
         }
         [HttpPost(StudentUriConstants.Create)]
-        public async Task<ApiResult> Create(StudentResponse student, CancellationToken cancellationToken)
+        public async Task<ApiResult> Create(CreateStudentRequest student, CancellationToken cancellationToken)
         {
             await studentService.CreateAsync(mapper.Map<StudentDto>(student), cancellationToken);
             return ApiResult.NoContent();

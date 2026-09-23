@@ -14,18 +14,6 @@ namespace School.Api.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<StudentDto, StudentResponse>();
-            CreateMap<LessonDto, LessonResponse>();
-            CreateMap<UserDto, UserResponse>();
-            CreateMap<AttendanceDayDto, AttendanceDayResponse>();
-            CreateMap<AttendanceDelayDto, AttendanceDelayResponse>();
-            CreateMap<AttendanceLogDto, AttendanceLogResponse>();
-            CreateMap<StudentResponse, StudentDto>();
-            CreateMap<LessonResponse, LessonDto>();
-            CreateMap<UserResponse, UserDto>();
-            CreateMap<AttendanceDayResponse, AttendanceDayDto>();
-            CreateMap<AttendanceDelayResponse, AttendanceDelayDto>();
-            CreateMap<AttendanceLogResponse, AttendanceLogDto>();
         }
     }
 }

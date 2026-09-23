@@ -1,7 +1,7 @@
 ﻿using School.Domain.Constants;
 
 namespace School.Api.Validators.Messages
-{
+{ 
     public static class UserValidationMessages
     {
         public const string StudentIdRequiredForParent = "کد دانش آموزی برای والدین اجباری است!!";

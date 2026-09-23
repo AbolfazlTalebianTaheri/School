@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace School.Api.Middleware
 {
-    public sealed class ApiResultMiddleare(RequestDelegate next)
+    public sealed class ApiResultMiddleware(RequestDelegate next)
     {
         private static readonly JsonSerializerOptions SerializerOptions= new (JsonSerializerDefaults.Web);
         public async Task InvokeAsync(HttpContext context)

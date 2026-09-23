@@ -31,6 +31,7 @@ namespace School.Application.Repository
         // ========================
         Task<AttendanceLog?> GetLogByIdAsync(
             int id,
+            DateOnly date,
             CancellationToken cancellationToken = default);
         Task<AttendanceLog?> GetStudentLogAsync(
             ushort studentId,
@@ -45,6 +46,7 @@ namespace School.Application.Repository
             CancellationToken cancellationToken = default);
         Task AddLogAsync(
             AttendanceLog log,
+            DateOnly date,
             CancellationToken cancellationToken = default);
         void UpdateLog(AttendanceLog log);
         void DeleteLog(AttendanceLog log);
@@ -71,5 +73,6 @@ namespace School.Application.Repository
             CancellationToken cancellationToken = default);
         void UpdateDelay(AttendanceDelay delay);
         void DeleteDelay(AttendanceDelay delay);
+        Task SaveChangeAsync(CancellationToken cancellationToken= default);
     }
 }

@@ -19,7 +19,7 @@ namespace School.Domain.Entitys
             UserName = userName;
             PhoneNumber = phoneNumber;
             UserRole = userRole;
-            PasswordHash = passWordHash;
+            PassWordHash = passWordHash;
             StudentId = studentId; 
         }
     }

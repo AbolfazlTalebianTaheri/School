@@ -2,6 +2,7 @@
 using School.Application.Repository;
 using School.Domain.Entitys;
 using School.Domain.Enums;
+using School.Domain.InterFaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,11 +21,14 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Repository
                     x.IsAbsent)
                 .ToListAsync(cancellationToken);
         }
-        public async Task AddLogAsync(AttendanceLog log, CancellationToken cancellationToken = default)
+        public async Task AddLogAsync(ushort studentId,DateOnly date, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(log);
-            await dbContext.AttendanceLogs
-                .AddAsync(log, cancellationToken);
+            var day = await dbContext.AttendanceDays.Include(x => x.Logs)
+                .FirstOrDefaultAsync(x => x.Date == date);
+            if (day is null)
+                return;
+            var logStudent = new AttendanceLog(studentId);
+            day.AddLog(logStudent);
         }
         public void UpdateLog(AttendanceLog log)
         {
@@ -104,43 +108,26 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Repository
             dbContext.AttendanceDelays.Remove(delay);
         }
 
-        public Task<AttendanceDay?> GetDayByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<AttendanceDay?> GetDayByIdAsync(int id, CancellationToken cancellationToken = default) => await dbContext.AttendanceDays.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        public async Task<AttendanceDay?> GetDayByDateAsync(DateOnly date, CancellationToken cancellationToken = default) => await dbContext.AttendanceDays.FirstOrDefaultAsync(x => x.Date == date, cancellationToken);
+        public async Task<bool> DayExistsAsync(DateOnly date, CancellationToken cancellationToken = default) => await dbContext.AttendanceDays.FirstOrDefaultAsync(x => x.Date == date) is not null;
 
-        public Task<AttendanceDay?> GetDayByDateAsync(DateOnly date, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task AddDayAsync(AttendanceDay day, CancellationToken cancellationToken = default) => await dbContext.AttendanceDays.AddAsync(day, cancellationToken);
+        public void UpdateDay(AttendanceDay day) => dbContext.Update(day);
 
-        public Task<bool> DayExistsAsync(DateOnly date, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddDayAsync(AttendanceDay day, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateDay(AttendanceDay day)
-        {
-            throw new NotImplementedException();
-        }
 
         public void DeleteDay(AttendanceDay day)
         {
             throw new NotImplementedException();
         }
 
-        public Task<AttendanceLog?> GetLogByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<AttendanceLog?> GetStudentLogAsync(ushort studentId, DateOnly date, CancellationToken cancellationToken = default)
+        public async Task<AttendanceLog?> GetLogByIdAsync(int id, CancellationToken cancellationToken = default) => await dbContext.AttendanceLogs.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        public async Task<AttendanceLog?> GetStudentLogAsync(ushort studentId, DateOnly date, CancellationToken cancellationToken = default)
         {
+            var dayLog= dbContext.AttendanceLogs.Where(x=>x.AttendanceDay.Date == date && x.StudentId==studentId);
+            //var log = dayDelay
+            //return dayLog.;
             throw new NotImplementedException();
         }
 
@@ -148,5 +135,7 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Repository
         {
             throw new NotImplementedException();
         }
+        public async Task SaveChangeAsync(CancellationToken cancellationToken = default) =>
+            await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

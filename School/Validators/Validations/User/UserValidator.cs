@@ -4,7 +4,7 @@ using School.Api.Validators.Messages;
 
 namespace School.Api.Validators.Validations.User
 {
-    public class UserValidator : AbstractValidator<UserResponse>
+    public class UserValidator : AbstractValidator<UpdateUserRequest>
     {
         public UserValidator()
         {
@@ -28,7 +28,7 @@ namespace School.Api.Validators.Validations.User
                 .WithMessage(UserValidationMessages.PhoneNumberRequired)
                 .Matches(@"^09\d{9}$")
                 .WithMessage(UserValidationMessages.PhoneNumberInvalid);
-            RuleFor(x=>x.UserName)
+            RuleFor(x => x.UserName)
                 .NotEmpty()
                 .WithMessage(UserValidationMessages.UserNameRequired)
                 .MinimumLength(3)

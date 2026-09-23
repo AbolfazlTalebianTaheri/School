@@ -6,6 +6,7 @@ namespace School.Application.DTOs
 {
     public class AttendanceDayDto
     {
-        public DateOnly Date { get; private set; }
+        public int Id { get; set; }
+        public DateOnly Date { get;  set; }
     }
 }
