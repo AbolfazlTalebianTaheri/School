@@ -6,6 +6,6 @@ namespace School.Domain.Constants
 {
     public static class TeacherConstant
     {
-        public const int MaxLenghTeacherName = 100;
+        public const int MaxLenghTeacherName = 100; 
     }
 }
