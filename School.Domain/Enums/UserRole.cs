@@ -7,6 +7,7 @@ namespace School.Domain.Enums
     public enum UserRole
     {
         Parent = 0,
-        Admin
+        Admin,
+        Teacher
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace School.Api.Contracts.Attendance.AttendanceLog
+﻿using School.Application.DTOs;
+
+namespace School.Api.Contracts.Attendance.AttendanceLog
 {
-    public record AttendanceLogResponse(ushort studentId, int attendanceDayId, bool isAbsent);
+    public record AttendanceLogResponse(ushort studentId, StudentDto student, int attendanceDayId, AttendanceDayDto attendanceDay, bool isAbsent);
 }

@@ -14,10 +14,9 @@ namespace School.Api.Middleware
             }
             catch (Exception ex)
             {
-
+                logger.LogError(ex, "Error while processing {Path}", context.Request.Path);
                 var statusCode = ResolveStatusCode(ex);
                 await WriteProblemAsync(context, statusCode, ResolveDetail(ex, statusCode));
-
             }
         }
 
@@ -29,6 +28,8 @@ namespace School.Api.Middleware
                     EntityNotFoundException => HttpStatusCode.NotFound,
                     DuplicateUserNameException => HttpStatusCode.Conflict,
                     ExistsDayException => HttpStatusCode.Conflict,
+                    DuplicateLogForStudentInDateException => HttpStatusCode.Conflict,
+                    _ => HttpStatusCode.InternalServerError
 
                 };
         private static Task WriteProblemAsync(HttpContext context, HttpStatusCode statusCode, string detail)

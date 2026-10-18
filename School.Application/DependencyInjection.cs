@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using School.Application.Mapper;
 using School.Application.Repository;
 using School.Application.Service;
+using School.Application.Service.Auth;
+using School.Domain.Entitys;
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
@@ -13,14 +16,16 @@ namespace School.Application
     {
         public static void AddAplication(this IServiceCollection services)
         {
-            services.AddAutoMapper(autoMapper=>
-            { },typeof(MappingProfile).Assembly);
+            services.AddAutoMapper(autoMapper =>
+            { }, typeof(MappingProfile).Assembly);
             services.AddScoped<StudentService>();
             services.AddScoped<UserService>();
             services.AddScoped<AttendanceService>();
             services.AddScoped<LessonService>();
             services.AddScoped<LoginService>();
             services.AddScoped<UserService>();
+            services.AddScoped<AuthService>();
+            services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         }
     }
 }

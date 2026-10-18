@@ -14,6 +14,9 @@ namespace School.Api.Validators.Messages
         public const string UserNameRequired = "نام کاربری اجباریست";
         public static readonly string UserNameMaxLength = $"نام کاربری حداکثر باید {UserConstant.MaxLengthUserNameResponse} کاراکتر باشد.";
         public static readonly string UserNameMinimumLength = $"نام کاربری حداقل باید {UserConstant.MinimumUserNameResponse} کاراکتر باشد.";
-
+        public const string RequredPassword = "پسورد اجباریست";
+        public const string CantSetStudentIdForAdmin = "نمی تواند کد دانش آموزی برای ادمین ثبت کنید";
+        public const string CantSetUserNameForParent= "نمی تواند نام کاربری برای والدین ثبت کنید";
+        public const string CantSetPasswordForParent= "نمی تواند رمز عبور برای والدین ثبت کنید";
     }
 }

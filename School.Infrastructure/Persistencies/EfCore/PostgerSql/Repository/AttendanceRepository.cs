@@ -21,7 +21,7 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Repository
                     x.IsAbsent)
                 .ToListAsync(cancellationToken);
         }
-        public async Task AddLogAsync(ushort studentId,DateOnly date, CancellationToken cancellationToken = default)
+        public async Task AddLogAsync(ushort studentId, DateOnly date, CancellationToken cancellationToken = default)
         {
             var day = await dbContext.AttendanceDays.Include(x => x.Logs)
                 .FirstOrDefaultAsync(x => x.Date == date);
@@ -92,10 +92,10 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Repository
         public async Task AddDelayAsync(AttendanceDelay delay, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(delay);
-            await dbContext.AttendanceDelays
-                .AddAsync(
-                    delay,
-                    cancellationToken);
+            var log = await dbContext.AttendanceLogs.FirstOrDefaultAsync(x => x.Id == delay.AttendanceLogId);
+            if (log is null)
+                return;
+            log.AddDelay(delay.Class_Bell, delay.LessonId, delay.DelayMinutes);
         }
         public void UpdateDelay(AttendanceDelay delay)
         {
@@ -110,32 +110,59 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Repository
 
         public async Task<AttendanceDay?> GetDayByIdAsync(int id, CancellationToken cancellationToken = default) => await dbContext.AttendanceDays.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         public async Task<AttendanceDay?> GetDayByDateAsync(DateOnly date, CancellationToken cancellationToken = default) => await dbContext.AttendanceDays.FirstOrDefaultAsync(x => x.Date == date, cancellationToken);
-        public async Task<bool> DayExistsAsync(DateOnly date, CancellationToken cancellationToken = default) => await dbContext.AttendanceDays.FirstOrDefaultAsync(x => x.Date == date) is not null;
+        public async Task<bool> DayExistsAsync(DateOnly date, CancellationToken cancellationToken = default) => await dbContext.AttendanceDays.AnyAsync(x => x.Date == date);
 
-        public async Task AddDayAsync(AttendanceDay day, CancellationToken cancellationToken = default) => await dbContext.AttendanceDays.AddAsync(day, cancellationToken);
+        public async Task<AttendanceDay?> AddDayAsync(AttendanceDay day, CancellationToken cancellationToken = default)
+        {
+            await dbContext.AttendanceDays.AddAsync(day, cancellationToken);
+            var attendanceDay = await dbContext.AttendanceDays.FirstOrDefaultAsync(x => x.Date == day.Date);
+            if (attendanceDay is null)
+                return null;
+            return new AttendanceDay(attendanceDay.Id, attendanceDay.Date);
+        }
         public void UpdateDay(AttendanceDay day) => dbContext.Update(day);
 
 
-        public void DeleteDay(AttendanceDay day)
+        public async Task DeleteDay(AttendanceDay day)
         {
-            throw new NotImplementedException();
+            var dayDelete = await dbContext.AttendanceDays.FirstOrDefaultAsync(x => x.Date == day.Date);
+            if (dayDelete is null)
+                return;
+            dayDelete.IsDeleted = true;
         }
 
 
-        public async Task<AttendanceLog?> GetLogByIdAsync(int id, CancellationToken cancellationToken = default) => await dbContext.AttendanceLogs.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        public async Task<AttendanceLog?> GetLogByIdAsync(int id, DateOnly date, CancellationToken cancellationToken = default)
+        {
+            var dayLog = await dbContext.AttendanceDays.Include(x => x.Logs)
+                .FirstOrDefaultAsync(x => x.Date == date, cancellationToken);
+            if (dayLog is null) return null;
+            return dayLog.Logs.FirstOrDefault(x => x.Id == id);
+        }
+
         public async Task<AttendanceLog?> GetStudentLogAsync(ushort studentId, DateOnly date, CancellationToken cancellationToken = default)
         {
-            var dayLog= dbContext.AttendanceLogs.Where(x=>x.AttendanceDay.Date == date && x.StudentId==studentId);
-            //var log = dayDelay
-            //return dayLog.;
-            throw new NotImplementedException();
+            var dayLog = await dbContext.AttendanceDays.Include(x => x.Logs)
+                .FirstOrDefaultAsync(x => x.Date == date, cancellationToken);
+            if (dayLog is null) return null;
+            return dayLog.Logs.FirstOrDefault(x => x.StudentId == studentId);
         }
 
-        public Task<bool> StudentLogExistsAsync(ushort studentId, DateOnly date, CancellationToken cancellationToken = default)
+        public async Task<bool> StudentLogExistsAsync(ushort studentId, DateOnly date, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var daylog = await dbContext.AttendanceDays.Include(x => x.Logs)
+                .FirstOrDefaultAsync(x => x.Date == date, cancellationToken);
+            //if (daylog is null) return false;
+            return daylog.Logs.Any(x => x.StudentId == studentId);
         }
-        public async Task SaveChangeAsync(CancellationToken cancellationToken = default) =>
-            await dbContext.SaveChangesAsync(cancellationToken);
+        public async Task SaveChangeAsync(CancellationToken cancellationToken = default) => await dbContext.SaveChangesAsync(cancellationToken);
+
+        public async Task AddLogAsync(AttendanceLog log, DateOnly date, CancellationToken cancellationToken = default)
+        {
+            var dayLog = await dbContext.AttendanceDays.Include(x => x.Logs)
+                .FirstOrDefaultAsync(x => x.Date == date, cancellationToken);
+            if (dayLog is null) return;
+            dayLog.AddLog(log);
+        }
     }
 }

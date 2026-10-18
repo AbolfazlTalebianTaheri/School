@@ -14,12 +14,12 @@ namespace School.Domain.Entitys
         public UserRole UserRole { get; private set; }
         public string? PassWordHash { get; private set; }
         private User() { }
-        public User(string? phoneNumber, string? userName, UserRole userRole, string? passWordHash,ushort studentId)
+        public User(string? phoneNumber, string? userName, UserRole userRole, string? passWord,ushort? studentId = null)
         {
             UserName = userName;
             PhoneNumber = phoneNumber;
             UserRole = userRole;
-            PassWordHash = passWordHash;
+            PassWordHash = passWord;
             StudentId = studentId; 
         }
     }

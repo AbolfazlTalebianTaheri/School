@@ -20,6 +20,8 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Configurations
                 .HasMaxLength(UserConstant.MaxLenghPasswordHash);
             builder.Property(x => x.UserRole)
                 .IsRequired(true);
+            builder.HasIndex(x => x.UserName);
+            builder.HasIndex(x => x.PhoneNumber);
         }
     }
 }

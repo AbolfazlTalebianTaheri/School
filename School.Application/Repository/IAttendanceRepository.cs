@@ -21,11 +21,11 @@ namespace School.Application.Repository
         Task<bool> DayExistsAsync(
             DateOnly date,
             CancellationToken cancellationToken = default);
-        Task AddDayAsync(
+        Task<AttendanceDay> AddDayAsync(
             AttendanceDay day,
             CancellationToken cancellationToken = default);
         void UpdateDay(AttendanceDay day);
-        void DeleteDay(AttendanceDay day);
+        Task DeleteDay(AttendanceDay day);
         // ========================
         // AttendanceLog
         // ========================

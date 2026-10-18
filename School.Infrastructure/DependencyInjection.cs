@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using School.Application.InterFaces;
 using School.Application.Repository;
 using School.Domain.Entitys;
+using School.Infrastructure.Authentication;
 using School.Infrastructure.Persistencies.EfCore.PostgerSql;
 using School.Infrastructure.Persistencies.EfCore.PostgerSql.Repository;
 using School.Infrastructure.Persistencies.Mongo;
@@ -23,11 +26,16 @@ namespace School.Infrastructure
             services.AddScoped<IStudentRepository, StudentRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ILessonRepository, LessonRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
+            //services.AddScoped<IUserRepository, UserRepository>();
+            //services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             //services.AddMongo(configuration);
-
+            services.AddPasswordHasherLifeTime();
+        }
+        private static void AddPasswordHasherLifeTime(this IServiceCollection services)
+        {
+            services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            services.AddScoped<IPasswordService, PasswordService>();
         }
         private static void AddMongo(this IServiceCollection services, IConfiguration configuration)
         {

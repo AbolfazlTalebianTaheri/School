@@ -15,6 +15,9 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Repository
 
         public async Task<User?> GetByRoleAndUserNameAsync(UserRole role, string userName, CancellationToken cancellationToken = default) => await _set.FirstOrDefaultAsync(x => x.UserRole == role && x.UserName == userName, cancellationToken);
 
+        public async Task<User?> GetByUserNameAsync(string userName, CancellationToken cancellationToken = default) =>
+            await _set.FirstOrDefaultAsync(x => x.UserName == userName, cancellationToken);
+
         public async Task<bool> UserNameExistsAsync(string userName, UserRole userRole, CancellationToken cancellationToken = default) => await _set.AnyAsync(x => x.UserName == userName && x.UserRole == userRole, cancellationToken);
     }
 }

@@ -1,4 +1,4 @@
 ﻿namespace School.Api.Contracts.Attendance.AttendanceDay
 {
-    public record AttendanceDayResponse(DateOnly date);
+    public record AttendanceDayResponse(int id ,DateOnly date);
 }

@@ -2,5 +2,5 @@
 
 namespace School.Api.Contracts.User
 {
-    public record CreateUserRequest(string? UserName, string? PhoneNumber, string? Password, ushort? StudentId, UserRole UserRole);
+    public record CreateUserRequest(UserRole UserRole,string? UserName =null, string? Password = null, string? PhoneNumber = null, ushort? StudentId =null);
 }

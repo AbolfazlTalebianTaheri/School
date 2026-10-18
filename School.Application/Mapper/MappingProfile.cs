@@ -19,7 +19,7 @@ namespace School.Application.Mapper
             CreateMap<AttendanceDelay,AttendanceDelayDto>();
             CreateMap<AttendanceLog,AttendanceLogDto>();
             CreateMap<StudentDto, Student>();
-            CreateMap<UserDto, User>();
+            CreateMap<UserDto, User>().ForMember(x=>x.PassWordHash,y=>y.MapFrom(s=>s.Password));
             CreateMap<AttendanceLogDto, AttendanceLog>();
             CreateMap<LessonDto, Lesson>();
             CreateMap<AttendanceDayDto, AttendanceDay>();

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using School.Domain.Exceptions;
+using System;
 using System.Collections.Generic;
+using System.Runtime;
 using System.Text;
 
 namespace School.Domain.Entitys
@@ -13,6 +15,11 @@ namespace School.Domain.Entitys
         public IReadOnlyCollection<AttendanceLog> Logs => _logs;
 
         private AttendanceDay() { }
+        public AttendanceDay(int id,DateOnly date)
+        {
+            Id = id;
+            Date = date;
+        }
 
         public AttendanceDay(DateOnly date) =>
             Date = date;
@@ -21,7 +28,7 @@ namespace School.Domain.Entitys
             ArgumentNullException.ThrowIfNull(log); // check if null exception or next step
             var alreadyExists = _logs.Any(x => x.StudentId == log.StudentId);
             if (alreadyExists)
-                throw new InvalidOperationException("Attendance for this student has already been resgetered");
+                throw new DuplicateUserNameException();
             _logs.Add(log);
         }
     }

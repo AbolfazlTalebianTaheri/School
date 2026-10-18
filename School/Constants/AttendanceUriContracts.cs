@@ -12,10 +12,10 @@
         public const string DeleteDelay = $"{Controller}/delay";
         public const string DeleteLog = $"{Controller}/log";
         public const string GetAbsentsByDate = $"{Controller}/{{date}}/absents";
-        public const string GetDayByDate = $"{Controller}/{{date}}/day";
+        public const string GetDayByDate = $"{Controller}/date/{{date}}/day";
         public const string GetDayById = $"{Controller}/{{id}}/day";
         public const string GetDelayById = $"{Controller}/{{id}}/delay";
-        public const string GetDelaysByDate = $"{Controller}/{{date}}/delay";
+        public const string GetDelaysByDate = $"{Controller}/date/{{date}}/delay";
         public const string GetLogById = $"{Controller}/{{id}}/log";
         public const string GetStudentDelays = $"{Controller}/delay";
         public const string GetStudentLog = $"{Controller}/log";

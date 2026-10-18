@@ -13,5 +13,6 @@ namespace School.Application.Repository
         Task<User?> GetByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken = default);
 
         Task<bool> UserNameExistsAsync(string userName, UserRole role, CancellationToken cancellationToken = default);
+        Task<User?> GetByUserNameAsync(string userName, CancellationToken cancellationToken = default);
     }
 }

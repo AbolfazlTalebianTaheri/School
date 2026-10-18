@@ -9,9 +9,11 @@ namespace School.Api.Mapping.User
         public MappingUser()
         {
             CreateMap<UserDto, UserResponse>();
-
-
             CreateMap<UserResponse, UserDto>();
+            CreateMap<UserDto, CreateUserRequest>();
+            CreateMap<CreateUserRequest, UserDto>();
+            CreateMap<UserDto, UpdateUserRequest>();
+            CreateMap<UpdateUserRequest, UserDto>();
         }
     }
 }

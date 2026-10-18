@@ -45,15 +45,15 @@ namespace School.Api.Controllers.V1
             return isUser;
         }
         [HttpPost(UserUriConstants.Create)]
-        public async Task<ApiResult> Create(UserResponse userResponse, CancellationToken cancellationToken = default)
+        public async Task<ApiResult> Create(CreateUserRequest userRequest, CancellationToken cancellationToken = default)
         {
-            await userService.CreateAsync(mapper.Map<UserDto>(userResponse), cancellationToken);
+            await userService.CreateAsync(mapper.Map<UserDto>(userRequest), cancellationToken);
             return ApiResult.NoContent();
         }
         [HttpPut(UserUriConstants.Update)]
-        public async Task<ApiResult> Update(UserResponse userResponse, ushort id, CancellationToken cancellationToken = default)
+        public async Task<ApiResult> Update(UpdateUserRequest userRequest, ushort id, CancellationToken cancellationToken = default)
         {
-            await userService.UpdateAsync(mapper.Map<UserDto>(userResponse), id, cancellationToken);
+            await userService.UpdateAsync(mapper.Map<UserDto>(userRequest), id, cancellationToken);
             return ApiResult.NoContent();
         }
         [HttpDelete(UserUriConstants.Delete)]
