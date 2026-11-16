@@ -1,8 +1,25 @@
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { GraduationCap, Plus, Users } from "lucide-react";
 import PageHeader from "../components/PageHeader";
-import { classes } from "../data/mock";
+import { getStudents } from "../api/services";
+import { useAsync } from "../api/useAsync";
+import { CLASS_DEFS } from "../data/classes";
+import { classKeyOf, faNumber } from "../utils/format";
 
 export default function ClassesPage() {
+  const navigate = useNavigate();
+  const students = useAsync(getStudents, []);
+
+  const counts = useMemo(() => {
+    const map = new Map<string, number>();
+    (students.data ?? []).forEach((s) => {
+      const key = classKeyOf(s);
+      map.set(key, (map.get(key) ?? 0) + 1);
+    });
+    return map;
+  }, [students.data]);
+
   return (
     <>
       <PageHeader
@@ -12,13 +29,16 @@ export default function ClassesPage() {
       />
 
       <div className="class-grid">
-        {classes.map(c => (
-          <article className="class-card" key={c.id}>
+        {CLASS_DEFS.map((c) => (
+          <article className="class-card" key={c.key}>
             <div className={`class-icon ${c.color}`}><GraduationCap /></div>
             <h3>{c.title}</h3>
-            <p>{c.teacher}</p>
-            <div className="class-meta"><Users size={17} /><span>{c.students} دانش‌آموز</span></div>
-            <button className="secondary-btn">مشاهده کلاس</button>
+            <p>پایه {c.gradeLabel} · رشته {c.fieldLabel}</p>
+            <div className="class-meta">
+              <Users size={17} />
+              <span>{students.loading ? "..." : faNumber(counts.get(c.key) ?? 0)} دانش‌آموز</span>
+            </div>
+            <button className="secondary-btn" onClick={() => navigate(`/students?class=${c.key}`)}>مشاهده کلاس</button>
           </article>
         ))}
       </div>

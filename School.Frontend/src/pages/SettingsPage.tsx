@@ -1,5 +1,6 @@
 import { Bell, LockKeyhole, Save, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import PageHeader from "../components/PageHeader";
+import { academicYearLabel } from "../utils/jalali";
 
 export default function SettingsPage() {
   return (
@@ -10,7 +11,7 @@ export default function SettingsPage() {
         <section className="panel settings-card">
           <div className="settings-title"><SlidersHorizontal /><div><h3>تنظیمات مدرسه</h3><p>اطلاعات عمومی مدرسه</p></div></div>
           <label>نام مدرسه<input defaultValue="مدرسه فردا" /></label>
-          <label>سال تحصیلی<select><option>۱۴۰۳ - ۱۴۰۴</option></select></label>
+          <label>سال تحصیلی<select><option>{academicYearLabel()}</option></select></label>
           <label>ساعت شروع مدرسه<input defaultValue="07:30" /></label>
         </section>
 

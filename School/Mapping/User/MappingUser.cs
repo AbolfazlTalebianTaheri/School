@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using School.Api.Contracts.User;
-using School.Application.DTOs;
+using School.Application.DTOs.User;
 
 namespace School.Api.Mapping.User
 {
@@ -8,12 +8,15 @@ namespace School.Api.Mapping.User
     {
         public MappingUser()
         {
-            CreateMap<UserDto, UserResponse>();
-            CreateMap<UserResponse, UserDto>();
-            CreateMap<UserDto, CreateUserRequest>();
-            CreateMap<CreateUserRequest, UserDto>();
-            CreateMap<UserDto, UpdateUserRequest>();
-            CreateMap<UpdateUserRequest, UserDto>();
+            CreateMap<UserRsponseDto, UserResponse>();
+            CreateMap<UserResponse, UserRsponseDto>();
+            CreateMap<UserRsponseDto, UserResponse>();
+            CreateMap<UserResponse, UserRsponseDto>();
+            CreateMap<CreateUserRequestDto, CreateUserRequest>();
+            CreateMap<CreateUserRequest, CreateUserRequestDto>();
+            CreateMap<CreateUserRequest, UserRsponseDto>();
+            CreateMap<UserRsponseDto, UpdateUserRequest>();
+            CreateMap<UpdateUserRequest, UserRsponseDto>();
         }
     }
 }

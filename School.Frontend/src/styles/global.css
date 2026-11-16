@@ -296,3 +296,105 @@ th { color: var(--muted); font-weight:500; background: var(--panel-2); }
   .segmented { flex-wrap:wrap; }
   .seg { flex:1; min-width:75px; }
 }
+
+/* ---- اتصال به API: وضعیت جدول‌ها، خطای فرم، دکمه فعال حضور و غیاب ---- */
+.table-state { text-align:center; color:var(--muted); padding:28px 10px; }
+.table-state.error { color:var(--red); }
+.form-error { color:var(--red); background:color-mix(in srgb, var(--red) 10%, transparent); border:1px solid color-mix(in srgb, var(--red) 35%, var(--border)); border-radius:9px; padding:10px 12px; font-size:11px; }
+.primary-btn:disabled { opacity:.7; cursor:wait; }
+.seg.active.ok { color:var(--green); border-color:color-mix(in srgb,var(--green) 55%,var(--border)); background:color-mix(in srgb,var(--green) 12%,transparent); }
+.seg.active.warn { color:var(--amber); border-color:color-mix(in srgb,var(--amber) 55%,var(--border)); background:color-mix(in srgb,var(--amber) 12%,transparent); }
+.seg.active.bad { color:var(--red); border-color:color-mix(in srgb,var(--red) 55%,var(--border)); background:color-mix(in srgb,var(--red) 12%,transparent); }
+.form-success { color:var(--green); background:color-mix(in srgb, var(--green) 10%, transparent); border:1px solid color-mix(in srgb, var(--green) 35%, var(--border)); border-radius:9px; padding:10px 12px; font-size:11px; }
+.seg:disabled { opacity:.45; cursor:not-allowed; }
+
+/* ---- فرم افزودن دانش‌آموز (Modal) ---- */
+.modal-backdrop { position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:18px; background:rgba(3,10,20,.62); backdrop-filter:blur(4px); animation:modalFade .15s ease; }
+.modal { width:min(580px,100%); max-height:calc(100vh - 36px); overflow:auto; background:var(--panel); border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow); animation:modalRise .18s ease; }
+.modal-head { display:flex; align-items:center; gap:12px; padding:18px 20px; border-bottom:1px solid var(--border); }
+.modal-icon { width:44px; height:44px; border-radius:12px; display:grid; place-items:center; background:var(--panel-2); color:var(--primary); flex-shrink:0; }
+.modal-head h3 { margin:0; font-size:15px; }
+.modal-head p { margin:4px 0 0; color:var(--muted); font-size:10px; }
+.modal-head .icon-btn { margin-inline-start:auto; width:36px; height:36px; flex-shrink:0; }
+.modal-body { padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.modal-field { display:grid; gap:7px; color:var(--muted); font-size:10px; align-content:start; }
+.modal-field > div { height:46px; border:1px solid var(--border); background:var(--panel-2); border-radius:10px; display:flex; align-items:center; gap:9px; padding:0 12px; color:var(--muted); transition:border-color .15s, box-shadow .15s; }
+.modal-field > div:focus-within { border-color:var(--primary); box-shadow:0 0 0 3px color-mix(in srgb, var(--primary) 16%, transparent); }
+.modal-field.invalid > div { border-color:var(--red); }
+.modal-field input, .modal-field select { flex:1; min-width:0; border:0; outline:0; background:transparent; color:var(--text); }
+.modal-field select option { background:var(--panel); color:var(--text); }
+.modal-field .err { color:var(--red); font-size:10px; }
+.modal-full { grid-column:1 / -1; }
+.modal-added { display:flex; align-items:center; gap:8px; }
+.modal-foot { display:flex; gap:10px; padding:4px 20px 20px; flex-wrap:wrap; }
+@keyframes modalFade { from { opacity:0; } to { opacity:1; } }
+@keyframes modalRise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+@media (max-width: 620px) {
+  .modal-body { grid-template-columns:1fr; }
+  .modal-foot > button { flex:1; }
+}
+
+/* ---- فیلدهای تاخیر در حضور و غیاب ---- */
+.delay-fields { grid-column:1 / -1; display:grid; grid-template-columns:1fr 1.4fr 1fr; gap:10px; padding-top:12px; border-top:1px dashed color-mix(in srgb, var(--amber) 45%, var(--border)); }
+.delay-field { display:grid; gap:6px; color:var(--muted); font-size:10px; }
+.delay-field select, .delay-field input { height:40px; min-width:0; border:1px solid var(--border); border-radius:9px; background:var(--panel); color:var(--text); padding:0 11px; outline:0; transition:border-color .15s; }
+.delay-field select:focus, .delay-field input:focus { border-color:var(--amber); }
+@media (max-width: 700px) { .delay-fields { grid-template-columns:1fr; } }
+
+/* ---- جدول با اسکرول (لیست کامل دانش‌آموزان در داشبورد) ---- */
+.table-scroll { max-height:520px; overflow-y:auto; }
+.table-scroll thead th { position:sticky; top:0; z-index:1; background:var(--panel); }
+
+/* ---- انتخاب تاریخ شمسی، ردیف عملیات، مودال حذف، برچسب نمودار ---- */
+.date-picker { display:flex; gap:8px; }
+.date-picker select { min-width:0; }
+.time-input:disabled { opacity:.55; }
+.row-actions { display:flex; gap:8px; }
+.mini-btn { width:34px; height:34px; display:grid; place-items:center; border:1px solid var(--border); background:var(--panel-2); color:var(--muted); border-radius:9px; cursor:pointer; transition:color .15s, border-color .15s; }
+.mini-btn:hover { color:var(--primary); border-color:var(--primary); }
+.mini-btn.danger:hover { color:var(--red); border-color:var(--red); }
+.danger-btn { height:46px; padding:0 22px; border:0; border-radius:10px; background:var(--red); color:#fff; font-weight:700; cursor:pointer; }
+.danger-btn:disabled { opacity:.7; cursor:wait; }
+.modal-sm { width:min(440px,100%); }
+.modal-icon.danger { color:var(--red); }
+.modal-body.one-col { grid-template-columns:1fr; }
+.confirm-text { margin:0; line-height:2; color:var(--text); font-size:12px; }
+.eye-btn { border:0; background:transparent; color:var(--muted); display:grid; place-items:center; cursor:pointer; padding:0; }
+.bar-chart.labeled { align-items:stretch; padding-bottom:10px; }
+.bar-col { flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:10px; }
+.bar-col .bar-group { flex:1; min-height:0; }
+.bar-label { font-size:10px; color:var(--muted); text-align:center; line-height:1.6; }
+.chart-note { padding:0 20px 18px; }
+
+.modal-field .ok { display:flex; align-items:center; gap:5px; color:var(--green); font-size:10px; }
+
+/* ---- صفحه ورود در لایت‌مود: پنل سمت راست هماهنگ با تم روشن ---- */
+:root[data-theme="light"] .login-visual {
+  background:
+    radial-gradient(circle at 50% 32%, rgba(20,121,235,.20), transparent 40%),
+    linear-gradient(150deg, #f4f9ff 0%, #dcebff 52%, #eef6ff 100%);
+  border-left:1px solid var(--border);
+}
+:root[data-theme="light"] .login-visual::before,
+:root[data-theme="light"] .login-visual::after { background:rgba(20,121,235,.10); }
+:root[data-theme="light"] .login-visual-overlay {
+  background:radial-gradient(rgba(20,121,235,.20) 1.3px, transparent 1.4px) 0 0 / 24px 24px;
+  -webkit-mask-image:linear-gradient(to bottom, transparent, #000 45%, transparent);
+  mask-image:linear-gradient(to bottom, transparent, #000 45%, transparent);
+}
+:root[data-theme="light"] .big-logo {
+  width:118px; height:118px; margin:0 auto; display:grid; place-items:center;
+  border-radius:32px; background:#fff; color:var(--primary);
+  box-shadow:0 18px 45px rgba(20,121,235,.20), 0 0 0 1px rgba(20,121,235,.10);
+}
+:root[data-theme="light"] .login-visual h1 { color:var(--text); }
+:root[data-theme="light"] .login-visual h1 span { color:var(--primary); }
+:root[data-theme="light"] .login-visual p { color:var(--muted); }
+:root[data-theme="light"] .login-slogan { color:var(--text); font-weight:400; }
+:root[data-theme="light"] .login-side {
+  background:radial-gradient(circle at 30% 10%, rgba(20,121,235,.10), transparent 32%), var(--bg);
+}
+
+/* ---- تب نقش‌ها (سه گزینه) و صفحه‌ی بارگذاری اولیه ---- */
+.role-tabs { grid-template-columns:repeat(3, 1fr); }
+.boot-screen { min-height:100vh; display:grid; place-items:center; color:var(--muted); background:var(--bg); font-size:13px; }

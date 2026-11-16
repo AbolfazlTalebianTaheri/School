@@ -16,16 +16,15 @@ namespace School.Application
     {
         public static void AddAplication(this IServiceCollection services)
         {
-            services.AddAutoMapper(autoMapper =>
-            { }, typeof(MappingProfile).Assembly);
+            services.AddAutoMapper(autoMapper => { }, typeof(MappingProfile).Assembly);
             services.AddScoped<StudentService>();
             services.AddScoped<UserService>();
             services.AddScoped<AttendanceService>();
             services.AddScoped<LessonService>();
             services.AddScoped<LoginService>();
-            services.AddScoped<UserService>();
             services.AddScoped<AuthService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            //services.AddScoped<ExceptionLogService>();
         }
     }
 }

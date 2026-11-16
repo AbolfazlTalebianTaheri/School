@@ -13,7 +13,6 @@ namespace School.Infrastructure.Authentication
         public string HashPassword(string password)
         {
             var user = new User(
-                phoneNumber: null,
                 userName: null,
                 userRole: default,
                 passWord: null,
@@ -25,7 +24,6 @@ namespace School.Infrastructure.Authentication
         public bool VerifyPassword(string password, string passwordHash)
         {
             var user = new User(
-                phoneNumber: null,
                 userName: null,
                 userRole: default,
                 passWord: passwordHash,

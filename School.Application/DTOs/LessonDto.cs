@@ -7,6 +7,7 @@ namespace School.Application.DTOs
 {
     public class LessonDto
     {
+        public ushort Id { get; set; }
         public string LessonName { get;  set; } = null!;
         public Grade_Level Grade_Level { get;  set; }
         public Field_Of_Study Field_Of_Study { get;  set; }

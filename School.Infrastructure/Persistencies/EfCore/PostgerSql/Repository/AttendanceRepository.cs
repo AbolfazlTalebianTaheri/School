@@ -115,14 +115,11 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Repository
         public async Task<AttendanceDay?> AddDayAsync(AttendanceDay day, CancellationToken cancellationToken = default)
         {
             await dbContext.AttendanceDays.AddAsync(day, cancellationToken);
-            var attendanceDay = await dbContext.AttendanceDays.FirstOrDefaultAsync(x => x.Date == day.Date);
-            if (attendanceDay is null)
-                return null;
-            return new AttendanceDay(attendanceDay.Id, attendanceDay.Date);
+            return day;
         }
+        public async Task<AttendanceDay?> GetDayWithLogsByDateAsync(DateOnly date, CancellationToken cancellationToken = default) =>
+            await dbContext.AttendanceDays.Include(x => x.Logs).ThenInclude(x => x.Delays).FirstOrDefaultAsync(x => x.Date == date, cancellationToken);
         public void UpdateDay(AttendanceDay day) => dbContext.Update(day);
-
-
         public async Task DeleteDay(AttendanceDay day)
         {
             var dayDelete = await dbContext.AttendanceDays.FirstOrDefaultAsync(x => x.Date == day.Date);
@@ -130,8 +127,6 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Repository
                 return;
             dayDelete.IsDeleted = true;
         }
-
-
         public async Task<AttendanceLog?> GetLogByIdAsync(int id, DateOnly date, CancellationToken cancellationToken = default)
         {
             var dayLog = await dbContext.AttendanceDays.Include(x => x.Logs)

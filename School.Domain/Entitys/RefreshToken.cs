@@ -1,31 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace School.Domain.Entitys
+﻿namespace School.Domain.Entitys
 {
     public class RefreshToken
     {
-        public int Id { get; private set; }
+        public long Id { get; private set; }
+        public ushort UserId { get; private set; }
+        public User User { get; private set; }
         public string TokenHash { get; private set; } = null!;
-        public string UserId { get; private set; } = null!;
-        public DateTime ExpiresAtUtc { get; private set; }
-        public DateTime CreatedAtUtc { get; private set; }
-        public DateTime? RevokedAtUtc { get; private set; }
-        public int? ReplacedByTokenId { get; private set; }
+        public bool IsPersistent { get; private set; }
+        public DateTime CreatedAt { get; private set; }
+        public DateTime ExpiresAt { get; private set; }
+        public DateTime? RevokedAt { get; private set; }
+        public string? ReplacedByTokenHash { get; private set; }
+
         private RefreshToken() { }
-        public RefreshToken(string tokenHash, string userId, DateTime expiresAtUtc)
+
+        public RefreshToken(
+            string tokenHash,
+            ushort userId,
+            DateTime expiresAt,
+            bool isPersistent = false)
         {
             TokenHash = tokenHash;
             UserId = userId;
-            ExpiresAtUtc = expiresAtUtc;
-            CreatedAtUtc = DateTime.UtcNow;
+            ExpiresAt = expiresAt;
+            IsPersistent = isPersistent;
+            CreatedAt = DateTime.UtcNow;
         }
-        public bool IsActive => RevokedAtUtc is null && DateTime.UtcNow < ExpiresAtUtc;
-        public void Revoke()
+
+        public bool IsExpired => DateTime.UtcNow >= ExpiresAt;
+        public bool IsRevoked => RevokedAt.HasValue;
+        public bool IsActive => !IsExpired && !IsRevoked;
+
+        public void Revoke(string? replaceByTokenHash = null)
         {
-            if (RevokedAtUtc is null)
-                RevokedAtUtc = DateTime.UtcNow;
+            RevokedAt = DateTime.UtcNow;
+            ReplacedByTokenHash = replaceByTokenHash;
         }
     }
 }

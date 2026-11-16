@@ -8,19 +8,22 @@ namespace School.Domain.Entitys
     public class User : BaseClass<ushort>
     {
         public string? UserName { get; private set; }
-        public string? PhoneNumber { get; private set; }
-        public ushort? StudentId { get; private set; }
-        public Student? Student { get; private set; }
-        public UserRole UserRole { get; private set; }
         public string? PassWordHash { get; private set; }
+        public ushort? StudentId { get; private set; }
+        public List<Student> Students { get; private set; } = new();
+        public List<Lesson> Lessons { get; private set; } = new();
+        public UserRole UserRole { get; private set; }
         private User() { }
-        public User(string? phoneNumber, string? userName, UserRole userRole, string? passWord,ushort? studentId = null)
+        public User(string? userName, UserRole userRole, string? passWord, ushort? studentId = null)
         {
             UserName = userName;
-            PhoneNumber = phoneNumber;
             UserRole = userRole;
             PassWordHash = passWord;
-            StudentId = studentId; 
+            StudentId = studentId;
         }
+        public void AddLesson(Lesson lesson) =>
+            Lessons.Add(lesson);
+        public void AddStudent(Student student) =>
+            Students.Add(student);
     }
 }

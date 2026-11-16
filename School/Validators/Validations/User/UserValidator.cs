@@ -23,11 +23,11 @@ namespace School.Api.Validators.Validations.User
                 .WithMessage(UserValidationMessages.AnUppercaseLetterIsMandatory)
                 .Matches("[0-9]")
                 .WithMessage(UserValidationMessages.A_NumberIsRequired);
-            RuleFor(x => x.PhoneNumber)
+            RuleFor(x => x.NationalCode)
                 .NotEmpty()
                 .WithMessage(UserValidationMessages.PhoneNumberRequired)
-                .Matches(@"^09\d{9}$")
-                .WithMessage(UserValidationMessages.PhoneNumberInvalid);
+                .Matches(@"^\d{10}$")
+                .WithMessage(UserValidationMessages.NationalCodeInvalid);
             RuleFor(x => x.UserName)
                 .NotEmpty()
                 .WithMessage(UserValidationMessages.UserNameRequired)

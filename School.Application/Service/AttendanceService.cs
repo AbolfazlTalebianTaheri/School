@@ -15,7 +15,7 @@ namespace School.Application.Service
         public async Task<AttendanceDayDto?> GetDayByIdAsync(int id, CancellationToken cancellationToken = default) => mapper.Map<AttendanceDayDto?>(await attendanceRepository.GetDayByIdAsync(id, cancellationToken));
         public async Task<AttendanceDayDto?> GetDayByDateAsync(DateOnly date, CancellationToken cancellationToken = default) => mapper.Map<AttendanceDayDto>(await attendanceRepository.GetDayByDateAsync(date, cancellationToken));
         private async Task<bool> DayExistsAsync(DateOnly date, CancellationToken cancellationToken = default) => await attendanceRepository.DayExistsAsync(date, cancellationToken);
-        private async Task<AttendanceDay> AddDayAsync(AttendanceDayDto day, CancellationToken cancellationToken = default)
+        private async Task<AttendanceDay?> AddDayAsync(AttendanceDayDto day, CancellationToken cancellationToken = default)
         {
             var response = await attendanceRepository.AddDayAsync(mapper.Map<AttendanceDay>(day), cancellationToken);
             await SaveChangeAsync(cancellationToken);
@@ -43,16 +43,45 @@ namespace School.Application.Service
             var isExists = await DayExistsAsync(date, cancellationToken);
             if (!isExists)
             {
-                var response = await AddDayAsync(new AttendanceDayDto()
+                await AddDayAsync(new AttendanceDayDto()
                 {
                     Date = date
                 }, cancellationToken);
-                log.Id = response.Id;
             }
+            log.Id = 0;
             var existsLogStudent =await StudentLogExistsAsync(log.StudentId,date, cancellationToken);
             if (existsLogStudent)
                 throw new DuplicateLogForStudentInDateException();
             await attendanceRepository.AddLogAsync(mapper.Map<AttendanceLog>(log), date, cancellationToken);
+            await SaveChangeAsync(cancellationToken);
+        }
+        /// <summary>
+        /// ثبت حضور/غیاب چند دانش‌آموز برای یک روز (اگر روز یا لاگ وجود نداشته باشد ساخته می‌شود، وگرنه بروزرسانی می‌شود)
+        /// </summary>
+        public async Task SaveDayAsync(DateOnly date, IReadOnlyList<StudentAttendanceItem> items, CancellationToken cancellationToken = default)
+        {
+            var day = await attendanceRepository.GetDayWithLogsByDateAsync(date, cancellationToken);
+            if (day is null)
+            {
+                day = new AttendanceDay(date);
+                await attendanceRepository.AddDayAsync(day, cancellationToken);
+                await attendanceRepository.SaveChangeAsync(cancellationToken);
+            }
+            foreach (var item in items.GroupBy(x => x.StudentId).Select(g => g.Last()))
+            {
+                var log = day.Logs.FirstOrDefault(x => x.StudentId == item.StudentId);
+                if (log is null)
+                {
+                    log = new AttendanceLog(item.StudentId);
+                    day.AddLog(log);
+                }
+                if (item.IsAbsent)
+                    log.MarkAbsent();
+                else if (item.Delay is not null)
+                    log.SetDelay(item.Delay.ClassBell, item.Delay.LessonId, item.Delay.DelayMinutes);
+                else
+                    log.MarkPresent();
+            }
             await SaveChangeAsync(cancellationToken);
         }
         public void UpdateLog(AttendanceLogDto log) => attendanceRepository.UpdateLog(mapper.Map<AttendanceLog>(log));

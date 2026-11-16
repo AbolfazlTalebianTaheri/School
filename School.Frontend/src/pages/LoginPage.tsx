@@ -1,19 +1,65 @@
 import { FormEvent, useState } from "react";
-import { BookOpen, Eye, EyeOff, LockKeyhole, Moon, ShieldCheck, Sun, User, Users } from "lucide-react";
+import { BookOpen, Eye, EyeOff, Hash, LockKeyhole, Moon, Sun, User, UserCog, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../theme/ThemeContext";
+import { login, ROLE_ADMIN, ROLE_PARENT, ROLE_TEACHER, type LoginPayload } from "../api/services";
+import { setToken } from "../auth/auth";
+import { toLatinDigits } from "../utils/format";
+
+type LoginRole = "admin" | "teacher" | "parent";
+
+const ROLE_CODE: Record<LoginRole, number> = {
+  admin: ROLE_ADMIN,
+  teacher: ROLE_TEACHER,
+  parent: ROLE_PARENT
+};
 
 export default function LoginPage() {
-  const [role, setRole] = useState<"admin" | "parent">("admin");
+  const [role, setRole] = useState<LoginRole>("admin");
   const [showPassword, setShowPassword] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [nationalCode, setNationalCode] = useState("");
+  const [remember, setRemember] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
-  const submit = (e: FormEvent) => {
+  const changeRole = (next: LoginRole) => {
+    setRole(next);
+    setError(null);
+  };
+
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
-    localStorage.setItem("accessToken", "demo-token");
-    navigate("/dashboard");
+    setError(null);
+
+    let payload: LoginPayload;
+    if (role === "parent") {
+      if (nationalCode.length !== 10) {
+        setError("کد ملی دانش‌آموز باید دقیقاً ۱۰ رقم باشد.");
+        return;
+      }
+      payload = { userRole: ROLE_PARENT, nationalCode, rememberMe: remember };
+    } else {
+      if (!userName.trim() || !password) {
+        setError("نام کاربری و رمز عبور را وارد کنید.");
+        return;
+      }
+      payload = { userRole: ROLE_CODE[role], userName: userName.trim(), password, rememberMe: remember };
+    }
+
+    setLoading(true);
+    try {
+      const result = await login(payload);
+      setToken(result.accessToken);
+      navigate("/dashboard", { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "ورود ناموفق بود.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -46,60 +92,79 @@ export default function LoginPage() {
           </div>
 
           <div className="role-tabs">
-            <button className={role === "admin" ? "active" : ""} onClick={() => setRole("admin")}>
+            <button type="button" className={role === "admin" ? "active" : ""} onClick={() => changeRole("admin")}>
               <User size={18} /> مدیر
             </button>
-            <button className={role === "parent" ? "active" : ""} onClick={() => setRole("parent")}>
+            <button type="button" className={role === "teacher" ? "active" : ""} onClick={() => changeRole("teacher")}>
+              <UserCog size={18} /> معلم
+            </button>
+            <button type="button" className={role === "parent" ? "active" : ""} onClick={() => changeRole("parent")}>
               <Users size={18} /> والدین
             </button>
           </div>
 
-          {role === "admin" ? (
-            <form className="login-form" onSubmit={submit}>
+          <form className="login-form" onSubmit={submit}>
+            {role === "parent" ? (
               <label className="field">
-                <span>نام کاربری</span>
-                <div><User size={19} /><input placeholder="نام کاربری خود را وارد کنید" /></div>
-              </label>
-
-              <label className="field">
-                <span>رمز عبور</span>
+                <span>کد ملی دانش‌آموز</span>
                 <div>
-                  <LockKeyhole size={19} />
-                  <input type={showPassword ? "text" : "password"} placeholder="رمز عبور خود را وارد کنید" />
-                  <button type="button" onClick={() => setShowPassword(v => !v)} className="field-action">
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
+                  <Hash size={19} />
+                  <input
+                    placeholder="کد ملی ۱۰ رقمی"
+                    inputMode="numeric"
+                    value={nationalCode}
+                    onChange={(e) => setNationalCode(toLatinDigits(e.target.value).replace(/\D/g, "").slice(0, 10))}
+                    autoComplete="off"
+                  />
                 </div>
               </label>
-
-              <div className="login-options">
-                <label><input type="checkbox" defaultChecked /> مرا به خاطر بسپار</label>
-                <a href="#">فراموشی رمز عبور؟</a>
-              </div>
-
-              <button className="primary-btn" type="submit">ورود به سامانه</button>
-            </form>
-          ) : (
-            <form className="login-form" onSubmit={submit}>
-              <label className="field">
-                <span>شماره موبایل</span>
-                <div><Users size={19} /><input placeholder="09121234567" inputMode="tel" /></div>
-              </label>
-
-              {otpSent && (
+            ) : (
+              <>
                 <label className="field">
-                  <span>کد تایید</span>
-                  <div><ShieldCheck size={19} /><input placeholder="------" inputMode="numeric" /></div>
+                  <span>نام کاربری</span>
+                  <div>
+                    <User size={19} />
+                    <input
+                      placeholder="نام کاربری خود را وارد کنید"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      autoComplete="username"
+                    />
+                  </div>
                 </label>
-              )}
 
-              {!otpSent ? (
-                <button className="primary-btn" type="button" onClick={() => setOtpSent(true)}>ارسال کد تایید</button>
-              ) : (
-                <button className="primary-btn" type="submit">تایید و ورود</button>
-              )}
-            </form>
-          )}
+                <label className="field">
+                  <span>رمز عبور</span>
+                  <div>
+                    <LockKeyhole size={19} />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="رمز عبور خود را وارد کنید"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="current-password"
+                    />
+                    <button type="button" onClick={() => setShowPassword((v) => !v)} className="field-action">
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </label>
+              </>
+            )}
+
+            <div className="login-options">
+              <label>
+                <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> مرا به خاطر بسپار
+              </label>
+              {role !== "parent" && <a href="#">فراموشی رمز عبور؟</a>}
+            </div>
+
+            {error && <div className="form-error" role="alert">{error}</div>}
+
+            <button className="primary-btn" type="submit" disabled={loading}>
+              {loading ? "در حال ورود..." : "ورود به سامانه"}
+            </button>
+          </form>
         </div>
       </section>
     </div>

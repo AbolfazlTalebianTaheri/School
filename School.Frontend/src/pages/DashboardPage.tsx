@@ -1,19 +1,66 @@
-import { BarChart3, Clock3, UserRoundX, Users } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { BarChart3, Clock3, Search, UserRoundX, Users } from "lucide-react";
 import StatCard from "../components/StatCard";
 import StatusBadge from "../components/StatusBadge";
-import { students } from "../data/mock";
+import TableState from "../components/TableState";
 import PageHeader from "../components/PageHeader";
+import { getStudents, getTodayAttendance, studentStatus } from "../api/services";
+import { useAsync } from "../api/useAsync";
+import { getSession } from "../auth/auth";
+import { faNumber, fullName, studentClass, todayJalali } from "../utils/format";
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
+  const students = useAsync(getStudents, []);
+  const today = useAsync(getTodayAttendance, []);
+  const userName = getSession()?.userName;
+  const [query, setQuery] = useState("");
+
+  const rows = useMemo(
+    () =>
+      (students.data ?? []).map((s) => ({
+        code: s.studentCode,
+        name: fullName(s),
+        className: studentClass(s),
+        status: studentStatus(s.studentCode, today.data)
+      })),
+    [students.data, today.data]
+  );
+
+  const filteredRows = rows.filter(
+    (r) => !query.trim() || `${r.name} ${r.code} ${r.className}`.includes(query.trim())
+  );
+
+  const total = rows.length;
+  const att = today.data;
+  const registered = !!att?.registered;
+  const absentCount = att?.absent.size ?? 0;
+  const delayCount = att?.delayed.size ?? 0;
+  const presentCount = Math.max(total - absentCount - delayCount, 0);
+  const rate = registered && total > 0 ? Math.round(((total - absentCount) / total) * 100) : null;
+  const todayHint = registered ? "ثبت‌شده برای امروز" : "حضور و غیاب امروز ثبت نشده";
+
+  // حلقه‌ی نمودار وضعیت امروز (اگر داده نباشد حلقه‌ی خنثی)
+  const donutStyle =
+    registered && total > 0
+      ? {
+          background: `conic-gradient(var(--green) 0 ${(presentCount / total) * 100}%, var(--amber) ${(presentCount / total) * 100}% ${((presentCount + delayCount) / total) * 100}%, var(--red) ${((presentCount + delayCount) / total) * 100}% 100%)`
+        }
+      : { background: "var(--border)" };
+
   return (
     <>
-      <PageHeader title="صبح بخیر، آقای محمدی 👋" subtitle="امروز هم روز خوبی برای ساختن فردای بهتر است" />
+      <PageHeader
+        title={`صبح بخیر${userName ? `، ${userName}` : ""} 👋`}
+        subtitle="امروز هم روز خوبی برای ساختن فردای بهتر است"
+      />
 
       <div className="stats-grid">
-        <StatCard title="کل دانش‌آموزان" value="۳۲۶" hint="↑ ۱۲٪ نسبت به ماه قبل" icon={Users} tone="green" />
-        <StatCard title="تعداد تاخیرها" value="۴۳" hint="↓ ۱۸٪ کاهش نسبت به ماه قبل" icon={Clock3} tone="amber" />
-        <StatCard title="تعداد غیبت‌ها" value="۱۲۸" hint="↑ ۱۲٪ افزایش نسبت به ماه قبل" icon={UserRoundX} tone="red" />
-        <StatCard title="نرخ حضور کلی" value="۸۷٪" hint="↑ ۳٪ بهتر از ماه گذشته" icon={BarChart3} tone="blue" />
+        <StatCard title="کل دانش‌آموزان" value={students.loading ? "..." : faNumber(total)} hint="ثبت‌شده در سامانه" icon={Users} tone="green" />
+        <StatCard title="تاخیرهای امروز" value={registered ? faNumber(delayCount) : "-"} hint={todayHint} icon={Clock3} tone="amber" />
+        <StatCard title="غیبت‌های امروز" value={registered ? faNumber(absentCount) : "-"} hint={todayHint} icon={UserRoundX} tone="red" />
+        <StatCard title="نرخ حضور امروز" value={rate === null ? "-" : `${faNumber(rate)}٪`} hint={todayHint} icon={BarChart3} tone="blue" />
       </div>
 
       <div className="dashboard-grid">
@@ -46,11 +93,11 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="donut-wrap">
-            <div className="donut"><div><strong>۳۲۶</strong><span>دانش‌آموز</span></div></div>
+            <div className="donut" style={donutStyle}><div><strong>{faNumber(total)}</strong><span>دانش‌آموز</span></div></div>
             <div className="donut-legend">
-              <span><i className="dot green" /> حاضر <b>۲۸۳</b></span>
-              <span><i className="dot amber" /> تاخیر <b>۲۵</b></span>
-              <span><i className="dot red" /> غایب <b>۱۸</b></span>
+              <span><i className="dot green" /> حاضر <b>{registered ? faNumber(presentCount) : "-"}</b></span>
+              <span><i className="dot amber" /> تاخیر <b>{registered ? faNumber(delayCount) : "-"}</b></span>
+              <span><i className="dot red" /> غایب <b>{registered ? faNumber(absentCount) : "-"}</b></span>
             </div>
           </div>
         </section>
@@ -59,32 +106,49 @@ export default function DashboardPage() {
       <section className="panel">
         <div className="panel-head">
           <div>
-            <h3>آخرین سوابق دانش‌آموزان</h3>
-            <p>آخرین وضعیت ثبت‌شده</p>
+            <h3>لیست دانش‌آموزان</h3>
+            <p>همه‌ی دانش‌آموزان ثبت‌شده و وضعیت امروز</p>
           </div>
-          <button className="secondary-btn">نمایش همه</button>
+          <button className="secondary-btn" onClick={() => navigate("/students")}>مدیریت دانش‌آموزان</button>
         </div>
 
-        <div className="table-wrap">
+        <div className="filters-row">
+          <div className="search-box">
+            <Search size={18} />
+            <input
+              placeholder="جستجوی نام، کد یا کلاس دانش‌آموز..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="table-wrap table-scroll">
           <table>
             <thead>
               <tr>
-                <th>#</th><th>نام و نام خانوادگی</th><th>کلاس</th><th>حضور</th><th>تاخیر</th><th>غیبت</th><th>وضعیت</th><th>تاریخ</th>
+                <th>#</th><th>نام و نام خانوادگی</th><th>کد دانش‌آموز</th><th>کلاس</th><th>وضعیت امروز</th><th>تاریخ</th>
               </tr>
             </thead>
             <tbody>
-              {students.map(s => (
-                <tr key={s.id}>
-                  <td>{s.id}</td>
-                  <td className="student-cell"><div className="tiny-avatar">{s.name[0]}</div>{s.name}</td>
-                  <td>{s.className}</td>
-                  <td>{s.present}</td>
-                  <td>{s.delay}</td>
-                  <td>{s.absence}</td>
-                  <td><StatusBadge status={s.status} /></td>
-                  <td>{s.date}</td>
-                </tr>
-              ))}
+              {students.loading ? (
+                <TableState cols={6} text="در حال بارگذاری..." />
+              ) : students.error ? (
+                <TableState cols={6} text={students.error} error />
+              ) : filteredRows.length === 0 ? (
+                <TableState cols={6} text={rows.length === 0 ? "هنوز دانش‌آموزی ثبت نشده است" : "دانش‌آموزی با این مشخصات یافت نشد"} />
+              ) : (
+                filteredRows.map((r, i) => (
+                  <tr key={r.code}>
+                    <td>{i + 1}</td>
+                    <td className="student-cell"><div className="tiny-avatar">{r.name[0]}</div>{r.name}</td>
+                    <td>{r.code}</td>
+                    <td>{r.className}</td>
+                    <td>{r.status ? <StatusBadge status={r.status} /> : "-"}</td>
+                    <td>{r.status ? todayJalali() : "-"}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

@@ -3,6 +3,7 @@
     public static class AttendanceUriContracts
     {
         private const string Controller = "attendances";
+        public const string SaveDay = $"{Controller}/{{date}}/save";
         public const string AddDay = $"{Controller}/day";
         public const string AddDelay = $"{Controller}/delay";
         public const string AddLog = $"{Controller}/log";

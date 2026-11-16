@@ -12,11 +12,11 @@ namespace School.Api.Validators.Validations.User
                 .IsInEnum()
                 .WithMessage(UserValidationMessages.StudentIdRequiredForParent);
 
-            When(x => !string.IsNullOrWhiteSpace(x.PhoneNumber), () =>
+            When(x => !string.IsNullOrWhiteSpace(x.NationalCode), () =>
             {
-                RuleFor(x => x.PhoneNumber)
-                    .Matches(@"^09\d{9}$")
-                    .WithMessage(UserValidationMessages.PhoneNumberInvalid);
+                RuleFor(x => x.NationalCode)
+                    .Matches(@"^\d{10}$")
+                    .WithMessage(UserValidationMessages.NationalCodeInvalid);
                 RuleFor(x => x.StudentId)
                     .NotEmpty()
                     .When(x => x.UserRole == Domain.Enums.UserRole.Parent)

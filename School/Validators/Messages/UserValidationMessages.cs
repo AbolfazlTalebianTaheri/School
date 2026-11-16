@@ -11,6 +11,7 @@ namespace School.Api.Validators.Messages
         public const string A_NumberIsRequired = "یک عدد اجباریست";
         public const string PhoneNumberRequired = "شماره تلفن اجباریست";
         public const string PhoneNumberInvalid = "شماره تلفن معتبر نیست";
+        public const string NationalCodeInvalid = "کد ملی باید دقیقاً ۱۰ رقم باشد";
         public const string UserNameRequired = "نام کاربری اجباریست";
         public static readonly string UserNameMaxLength = $"نام کاربری حداکثر باید {UserConstant.MaxLengthUserNameResponse} کاراکتر باشد.";
         public static readonly string UserNameMinimumLength = $"نام کاربری حداقل باید {UserConstant.MinimumUserNameResponse} کاراکتر باشد.";

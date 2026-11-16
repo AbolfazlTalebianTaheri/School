@@ -18,10 +18,13 @@ namespace School.Application.Repository
         Task<AttendanceDay?> GetDayByDateAsync(
             DateOnly date,
             CancellationToken cancellationToken = default);
+        Task<AttendanceDay?> GetDayWithLogsByDateAsync(
+            DateOnly date,
+            CancellationToken cancellationToken = default);
         Task<bool> DayExistsAsync(
             DateOnly date,
             CancellationToken cancellationToken = default);
-        Task<AttendanceDay> AddDayAsync(
+        Task<AttendanceDay?> AddDayAsync(
             AttendanceDay day,
             CancellationToken cancellationToken = default);
         void UpdateDay(AttendanceDay day);

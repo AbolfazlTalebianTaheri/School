@@ -9,6 +9,7 @@ namespace School.Domain.Entitys
     {
         public T Id { get; set; }
         public DateTimeOffset CreationTime => DateTimeOffset.Now;
+
         public bool IsDeleted { get; set; }
     }
 }

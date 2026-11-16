@@ -28,6 +28,24 @@ namespace School.Domain.Entitys
             IsAbsent = true;
             _delays.Clear(); // An absent student is not considered late.
         }
+        public void MarkPresent()
+        {
+            IsAbsent = false;
+            _delays.Clear(); // حاضر یعنی بدون تاخیر
+        }
+        /// <summary>
+        /// ثبت تاخیر: دانش‌آموز غایب محسوب نمی‌شود و فقط تاخیر همین زنگ نگه داشته می‌شود (بروزرسانی یا ساخت).
+        /// </summary>
+        public void SetDelay(Class_Bell class_Bell, ushort lessonId, int delayMinutes)
+        {
+            IsAbsent = false;
+            _delays.RemoveAll(x => x.Class_Bell != class_Bell);
+            var existing = _delays.FirstOrDefault(x => x.Class_Bell == class_Bell);
+            if (existing is null)
+                _delays.Add(new AttendanceDelay(class_Bell, lessonId, delayMinutes));
+            else
+                existing.Update(lessonId, delayMinutes);
+        }
         public void AddDelay(Class_Bell class_Bell, ushort lessonId,int delayMinutes)
         {
             if (IsAbsent)

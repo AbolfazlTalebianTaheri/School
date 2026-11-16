@@ -29,6 +29,8 @@ namespace School.Infrastructure
             //services.AddScoped<IUserRepository, UserRepository>();
             //services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.Configure<RefreshTokenSettings>(configuration.GetSection("RefreshToken"));
             //services.AddMongo(configuration);
             services.AddPasswordHasherLifeTime();
         }

@@ -6,23 +6,34 @@ import {
   Users, X, Bell, Search
 } from "lucide-react";
 import { useTheme } from "../theme/ThemeContext";
+import { can, getSession, roleLabels, type Feature } from "../auth/auth";
+import { signOut } from "../api/http";
+import { longJalaliToday } from "../utils/jalali";
 
-const navItems = [
-  { to: "/dashboard", label: "داشبورد", icon: LayoutDashboard },
-  { to: "/students", label: "دانش‌آموزان", icon: Users },
-  { to: "/attendance", label: "ثبت حضور و غیاب", icon: CalendarCheck },
-  { to: "/delays", label: "تاخیرها", icon: Clock3 },
-  { to: "/absences", label: "غیبت‌ها", icon: UserRoundX },
-  { to: "/classes", label: "کلاس‌ها", icon: GraduationCap },
-  { to: "/reports", label: "گزارش‌ها", icon: BarChart3 },
-  { to: "/users", label: "مدیریت کاربران", icon: Users },
-  { to: "/settings", label: "تنظیمات", icon: Settings }
+type NavItem = { to: string; label: string; icon: typeof Users; feature: Feature };
+
+const navItems: NavItem[] = [
+  { to: "/dashboard", label: "داشبورد", icon: LayoutDashboard, feature: "dashboard" },
+  { to: "/students", label: "دانش‌آموزان", icon: Users, feature: "students" },
+  { to: "/attendance", label: "ثبت حضور و غیاب", icon: CalendarCheck, feature: "attendance" },
+  { to: "/delays", label: "تاخیرها", icon: Clock3, feature: "delays" },
+  { to: "/absences", label: "غیبت‌ها", icon: UserRoundX, feature: "absences" },
+  { to: "/classes", label: "کلاس‌ها", icon: GraduationCap, feature: "classes" },
+  { to: "/lessons", label: "درس‌ها", icon: BookOpen, feature: "lessons" },
+  { to: "/reports", label: "گزارش‌ها", icon: BarChart3, feature: "reports" },
+  { to: "/users", label: "مدیریت کاربران", icon: Users, feature: "users" },
+  { to: "/settings", label: "تنظیمات", icon: Settings, feature: "settings" }
 ];
 
 export default function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const session = getSession();
+  const visibleNav = navItems.filter((item) => can(session?.role, item.feature));
+  const displayName = session?.userName || "کاربر";
+  const roleLabel = session?.role ? roleLabels[session.role] : "";
 
   const close = () => setMobileOpen(false);
 
@@ -41,7 +52,7 @@ export default function AdminLayout() {
         </div>
 
         <nav className="nav">
-          {navItems.map(({ to, label, icon: Icon }) => (
+          {visibleNav.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
@@ -62,8 +73,7 @@ export default function AdminLayout() {
         <button
           className="logout"
           onClick={() => {
-            localStorage.removeItem("accessToken");
-            navigate("/login");
+            void signOut().finally(() => navigate("/login", { replace: true }));
           }}
         >
           <LogOut size={20} />
@@ -79,13 +89,23 @@ export default function AdminLayout() {
             </button>
             <div className="date-box">
               <CalendarCheck size={18} />
-              <span>سه‌شنبه، ۱۵ آبان ۱۴۰۳</span>
+              <span>{longJalaliToday()}</span>
             </div>
           </div>
 
           <div className="topbar-center">
             <Search size={18} />
-            <input placeholder="جستجوی دانش‌آموز، کلاس، گزارش..." />
+            <input
+              placeholder="جستجوی دانش‌آموز..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && search.trim()) {
+                  navigate(`/students?q=${encodeURIComponent(search.trim())}`);
+                  setSearch("");
+                }
+              }}
+            />
           </div>
 
           <div className="topbar-left">
@@ -99,10 +119,10 @@ export default function AdminLayout() {
             </button>
 
             <div className="profile">
-              <div className="avatar">ع</div>
+              <div className="avatar">{displayName[0]}</div>
               <div>
-                <strong>علی محمدی</strong>
-                <small>مدیر مدرسه</small>
+                <strong>{displayName}</strong>
+                <small>{roleLabel}</small>
               </div>
             </div>
           </div>

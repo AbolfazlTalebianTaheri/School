@@ -13,8 +13,8 @@ namespace School.Api.Mapping.User
             CreateMap<CreateLessonRequest, LessonDto>();
             CreateMap<UpdateLessonRequest, LessonDto>();
 
-
             CreateMap<LessonDto, LessonResponse>();
+            CreateMap<Lesson, LessonResponse>();
 
         }
     }

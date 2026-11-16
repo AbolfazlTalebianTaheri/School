@@ -10,13 +10,15 @@ namespace School.Domain.Entitys
         public string FirstName { get; private set; } = null!;
         public string LastName { get; private set; } = null!;
         public int StudentCode { get; private set; }
+        public string NationalCode { get; private set; } = string.Empty;
         private readonly List<User> _users = new();
         public IReadOnlyCollection<User> Users => _users;
         public Grade_Level Grade_Level { get; private set; }
         public Field_Of_Study Field_Of_Study { get; private set; }
         private Student() { }
-        public Student(string firstName, string lastName, int studentCode, Grade_Level grade_Level, Field_Of_Study field_Of_Study)
+        public Student(string firstName, string lastName, int studentCode, Grade_Level grade_Level, Field_Of_Study field_Of_Study, string nationalCode = "")
         {
+            NationalCode = nationalCode;
             FirstName = firstName;
             LastName = lastName;
             StudentCode = studentCode;

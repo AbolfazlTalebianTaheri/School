@@ -14,6 +14,11 @@ namespace School.Domain.Entitys
         public Lesson Lesson { get; private set; } = null!;
         public int DelayMinutes { get; private set; }
         private AttendanceDelay() { }
+        public void Update(ushort lessonId, int delayMinutes)
+        {
+            LessonId = lessonId;
+            DelayMinutes = delayMinutes;
+        }
         public AttendanceDelay(Class_Bell class_Bell, ushort lessonId, int delayMinutes)
         {
             Class_Bell = class_Bell;

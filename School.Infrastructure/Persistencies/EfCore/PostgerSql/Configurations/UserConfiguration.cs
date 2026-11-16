@@ -21,7 +21,6 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Configurations
             builder.Property(x => x.UserRole)
                 .IsRequired(true);
             builder.HasIndex(x => x.UserName);
-            builder.HasIndex(x => x.PhoneNumber);
         }
     }
 }

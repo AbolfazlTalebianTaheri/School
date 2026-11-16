@@ -123,9 +123,55 @@ namespace School.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Lessons");
+                });
+
+            modelBuilder.Entity("School.Domain.Entitys.RefreshToken", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsPersistent")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ReplacedByTokenHash")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("School.Domain.Entitys.Student", b =>
@@ -152,6 +198,9 @@ namespace School.Infrastructure.Migrations
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("NationalCode")
+                        .HasColumnType("integer");
 
                     b.Property<int>("StudentCode")
                         .HasColumnType("integer");
@@ -232,6 +281,24 @@ namespace School.Infrastructure.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("School.Domain.Entitys.Lesson", b =>
+                {
+                    b.HasOne("School.Domain.Entitys.User", null)
+                        .WithMany("Lessons")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("School.Domain.Entitys.RefreshToken", b =>
+                {
+                    b.HasOne("School.Domain.Entitys.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("School.Domain.Entitys.User", b =>
                 {
                     b.HasOne("School.Domain.Entitys.Student", "Student")
@@ -254,6 +321,11 @@ namespace School.Infrastructure.Migrations
             modelBuilder.Entity("School.Domain.Entitys.Student", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("School.Domain.Entitys.User", b =>
+                {
+                    b.Navigation("Lessons");
                 });
 #pragma warning restore 612, 618
         }

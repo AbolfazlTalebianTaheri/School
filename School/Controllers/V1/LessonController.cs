@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using School.Api.Constants;
@@ -31,18 +32,21 @@ namespace School.Api.Controllers.V1
             var lesson = await lessonService.GetByIdAsync(id, cancellationToken);
             return mapper.Map<LessonResponse>(lesson);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost(LessonUriContracts.Create)]
         public async Task<ApiResult> Create(LessonResponse response, CancellationToken cancellationToken)
         {
             await lessonService.CreateAsync(mapper.Map<LessonDto>(response), cancellationToken);
             return ApiResult.NoContent();
         }
+        [Authorize(Roles = "Admin")]
         [HttpPut(LessonUriContracts.Update)]
         public async Task<ApiResult> Update(LessonResponse response, ushort id, CancellationToken cancellationToken)
         {
             await lessonService.UpdateAsync(mapper.Map<LessonDto>(response), id, cancellationToken);
             return ApiResult.NoContent();
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete(LessonUriContracts.Delete)]
         public async Task<ApiResult> Delete(ushort id, CancellationToken cancellationToken)
         {

@@ -23,15 +23,20 @@ namespace School.Infrastructure.Persistencies.EfCore.PostgerSql.Configurations
                 .IsRequired();
             builder.Property(x => x.StudentCode)
                 .IsRequired(true);
+            builder.Property(x => x.NationalCode)
+                .HasMaxLength(10)
+                .IsRequired();
             builder.Property(x => x.Users)
                 .IsRequired(true);
             builder.Property(x => x.Grade_Level)
                 .IsRequired(true);
             builder.Property(x => x.Field_Of_Study)
                 .IsRequired(true);
+            //builder.HasMany(x => x.Users)
+            //    .WithOne(x => x.Students)
+            //    .HasForeignKey(x => x.StudentId);
             builder.HasMany(x => x.Users)
-                .WithOne(x => x.Student)
-                .HasForeignKey(x => x.StudentId);
+                .WithMany(x => x.Students);
         }
     }
 }

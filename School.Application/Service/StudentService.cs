@@ -12,6 +12,11 @@ namespace School.Application.Service
     {
         public async Task CreateAsync(StudentDto entity, CancellationToken cancellationToken = default)
         {
+            var existing = await studentRepository.GetAllAsync(cancellationToken);
+            if (existing.Any(s => s.StudentCode == entity.StudentCode))
+                throw new School.Domain.Exceptions.DuplicateStudentException("این کد دانش‌آموزی قبلاً ثبت شده است.");
+            if (existing.Any(s => s.NationalCode == entity.NationalCode))
+                throw new School.Domain.Exceptions.DuplicateStudentException("این کد ملی قبلاً برای دانش‌آموز دیگری ثبت شده است.");
             await studentRepository.CreateAsync(mapper.Map<Student>(entity), cancellationToken);
             await studentRepository.SaveChangeAsync(cancellationToken);
         }
