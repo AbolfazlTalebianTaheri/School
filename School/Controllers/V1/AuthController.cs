@@ -17,7 +17,6 @@ namespace School.Api.Controllers.V1
         IOptions<JwtSettings> jwtSettings) : BaseController
     {
         private string CookieName => configuration["RefreshCookie:Name"] ?? "refresh_token";
-
         private CookieOptions BuildCookieOptions() => new()
         {
             HttpOnly = true,
@@ -27,15 +26,12 @@ namespace School.Api.Controllers.V1
                 : SameSiteMode.Strict,
             Path = configuration["RefreshCookie:Path"] ?? "/api/v1/auth"
         };
-
         private void SetRefreshCookie(AuthResult result)
         {
             var options = BuildCookieOptions();
-            // مرا به خاطر بسپار = کوکی ماندگار؛ در غیر این صورت با بسته شدن مرورگر پاک می‌شود
             options.Expires = result.IsPersistent ? new DateTimeOffset(result.RefreshTokenExpiresAtUtc, TimeSpan.Zero) : null;
             Response.Cookies.Append(CookieName, result.RefreshToken, options);
         }
-
         [AllowAnonymous]
         [EnableRateLimiting("login")]
         [HttpPost(AuthUriContrcts.Login)]
@@ -47,10 +43,8 @@ namespace School.Api.Controllers.V1
             var hasCredentials = loginRequest.UserRole == UserRole.Parent
                 ? !string.IsNullOrWhiteSpace(loginRequest.NationalCode)
                 : !string.IsNullOrWhiteSpace(loginRequest.UserName) && !string.IsNullOrEmpty(loginRequest.Password);
-
             if (!hasCredentials)
                 return ApiResult<LoginResponse>.Failed(new { message = "اطلاعات ناقص است." }, StatusCodes.Status400BadRequest);
-
             var result = await authService.LoginAsync(loginRequest, cancellationToken);
             if (result is null)
             {
@@ -58,11 +52,9 @@ namespace School.Api.Controllers.V1
                     new { message = "اطلاعات ورود نامعتبر است." },
                     StatusCodes.Status401Unauthorized);
             }
-
             SetRefreshCookie(result);
             return ApiResult<LoginResponse>.Succeeded(result.Response);
         }
-
         [AllowAnonymous]
         [HttpPost(AuthUriContrcts.Refresh)]
         public async Task<ApiResult<RefreshTokenResponce>> Refresh(CancellationToken cancellationToken = default)
@@ -85,7 +77,6 @@ namespace School.Api.Controllers.V1
                 result.Response.AccessToken,
                 DateTime.UtcNow.AddMinutes(jwtSettings.Value.ExpiratinMinutes)));
         }
-
         [AllowAnonymous]
         [HttpPost(AuthUriContrcts.Logout)]
         public async Task<ApiResult> Logout(CancellationToken cancellationToken = default)
@@ -102,7 +93,6 @@ namespace School.Api.Controllers.V1
         {
             if (CurrentUserId is ushort userId)
                 await authService.LogoutAllAsync(userId, cancellationToken);
-
             Response.Cookies.Delete(CookieName, BuildCookieOptions());
             return ApiResult.NoContent();
         }
